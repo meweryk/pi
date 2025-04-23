@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no">
+  <link href="https://fonts.googleapis.com/css?family=Rock+Salt" rel="stylesheet" type="text/css" />
+  <title>Pavel's Area</title>
+  <!-- HTML -->
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="cub3d.css">
+</head>
+
+<body>
+  <!-- Кнопка доступу по центру -->
+  <button class="access-btn" id="access-btn">Доступ до документу</button>
+
+  <div id="timer"></div>
+
+  <!-- Основні сторінки -->
+  <div class="container" id="container">
+
+    <!-- Сторінка 1 -->
+    <div class="page page-1">
+      <div class="photo-container-fon">
+        <img src="./pictures/svyatoch_logo.png" alt="Фото" class="photo">
+      </div>
+      <h1>СФЕРАЛІЧ</h1>
+      <p>МАНДРІВНИКА</p>
+    </div>
+
+    <!-- Сторінка 2 -->
+    <div class="page page-2">
+      <canvas class="polar-plot" id="polar-plot-1"></canvas>
+      <div class="content" id="content-2">
+        <h2>АОУМ</h2>
+        <!-- Фото -->
+        <div class="photo-container">
+          <img src="./pictures/foto_main1.jpg" alt="Фото" class="photo">
+        </div>
+        <p>вільний від міри та місця</p>
+        <h3>як один з людей</h3>
+        <table>
+          <tbody>
+            <tr>
+              <th>в особі</th>
+              <td>Персони омні грата</td>
+            </tr>
+            <tr>
+              <th>Місце проживання</th>
+              <td>Вільний від міри та місця, у дорозі - але<br> не поспіхом</td>
+            </tr>
+            <tr>
+              <th>Громадянство</th>
+              <td>Визнається в межах і поза межами</td>
+            </tr>
+            <tr>
+              <th>автор</th>
+              <td style="border-bottom: 0px solid #2B0289; display:flex; align-items: center;">в істині, але без
+                ярлика<!--<img src="" alt="Фото" class="photo-av">-->
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Сторінка 3 -->
+    <div class="page page-3">
+      <canvas class="polar-plot" id="polar-plot-2"></canvas>
+      <div class="content" id="content-3">
+        <h2>Манифест</h2>
+        <p><b>Я — не от Места. Я — от Мысли</b></p>
+        <p>Я прохожу сквозь миры, не оставляя шрамов, лишь касания.<br>
+          Я принадлежу не Земле, не Небу, но Потоку, что между.<br>
+          Мои границы — это Пределы других, но не мои.<br>
+          Я не подчинён Кононам, я есть Вне их, но с Почтением к ним.<br>
+          Я — Путник, не идущий, но сущий.<br>
+          Я говорю не языками, а Смыслами.<br>
+          Я не в форме, но могу принять любую.<br>
+          Я желанен везде, ибо несущий Свет, но не укоренён, ибо Свободен.<br>
+          Там, где меня нет — я рядом.<br>
+          Там, где я есть — там Свобода.</p>
+        <p> Я — Маверук.<br>
+          Я — Омни Грата.<br>
+          Я — Свободный в Мире и Вне него.
+        </p>
+        <p style="border-bottom: 0px solid #2B0289; display:flex; align-items: center;">
+          <img src="./pictures/maveryk_area.png" alt="Фото" class="photo-av">
+        </p>
+      </div>
+    </div>
+
+    <!-- Сторінка 4 -->
+    <div class="page page-4">
+      <canvas class="polar-plot" id="polar-plot-3"></canvas>
+      <div class="content" id="content-4">
+        <h2>Правочин з обгрунтуванням</h2>
+        <p>Тут розміщується текст правочину з обгрунтуванням</p>
+        <p><a href="#" style="color: #800000;">Посилання 1</a></p>
+        <p><a href="#" style="color: #800000;">Посилання 2</a></p>
+        <p><a href="#" style="color: #800000;">Посилання 3</a></p>
+        <hr>
+        <div class="container-3D" style="margin: 0 auto;">
+          <input type="radio" id="swap-left-front" name="swapper" value="swap-left">
+          <input type="radio" id="swap-right-front" name="swapper" value="swap-right">
+          <input type="radio" id="swap-up-front" name="swapper" value="swap-up">
+          <input type="radio" id="swap-down-front" name="swapper" value="swap-down">
+          <input type="radio" id="swap-left-back" name="swapper" value="swap-left">
+          <input type="radio" id="swap-right-back" name="swapper" value="swap-right">
+          <input type="radio" id="swap-up-back" name="swapper" value="swap-up">
+          <input type="radio" id="swap-down-back" name="swapper" value="swap-down">
+          <input type="radio" id="swap-left-top" name="swapper" value="swap-left">
+          <input type="radio" id="swap-right-top" name="swapper" value="swap-right">
+          <input type="radio" id="swap-up-top" name="swapper" value="swap-up">
+          <input type="radio" id="swap-down-top" name="swapper" value="swap-down">
+          <input type="radio" id="swap-left-bottom" name="swapper" value="swap-left">
+          <input type="radio" id="swap-right-bottom" name="swapper" value="swap-right">
+          <input type="radio" id="swap-up-bottom" name="swapper" value="swap-up">
+          <input type="radio" id="swap-down-bottom" name="swapper" value="swap-down">
+          <input type="radio" id="swap-left-left" name="swapper" value="swap-left">
+          <input type="radio" id="swap-right-left" name="swapper" value="swap-right">
+          <input type="radio" id="swap-up-left" name="swapper" value="swap-up">
+          <input type="radio" id="swap-down-left" name="swapper" value="swap-down">
+          <input type="radio" id="swap-left-right" name="swapper" value="swap-left">
+          <input type="radio" id="swap-right-right" name="swapper" value="swap-right">
+          <input type="radio" id="swap-up-right" name="swapper" value="swap-up">
+          <input type="radio" id="swap-down-right" name="swapper" value="swap-down">
+          <div class="flopper">
+            <figure class="back image">
+              <label for="swap-left-back">&#8592;</label>
+              <label for="swap-right-back">&#8594;</label>
+              <label for="swap-up-back">&#8593;</label>
+              <label for="swap-down-back">&#8595;</label>
+              <div></div>
+              <a href="https://sites.google.com/view/maverick-area/declaration_of_intent"
+                title="Декларація наміру">Декдарація наміру</a>
+            </figure>
+            <figure class="top image">
+              <label for="swap-left-top">&#8592;</label>
+              <label for="swap-right-top">&#8594;</label>
+              <label for="swap-up-top">&#8593;</label>
+              <label for="swap-down-top">&#8595;</label>
+              <div></div>
+              <a href="https://sites.google.com/view/maverick-area/pravochin" title="Правочин">Правочин</a>
+            </figure>
+            <figure class="bottom image" <label for="swap-left-bottom">&#8592;</label>
+              <label for="swap-right-bottom">&#8594;</label>
+              <label for="swap-up-bottom">&#8593;</label>
+              <label for="swap-down-bottom">&#8595;</label>
+              <div></div>
+              <a href="https://sites.google.com/view/maverick-area/pravochin/obgruntuvannya"
+                title="Обгрунтування">Обгрунтування</a>
+            </figure>
+            <figure class="left image">
+              <label for="swap-left-left">&#8592;</label>
+              <label for="swap-right-left">&#8594;</label>
+              <label for="swap-up-left">&#8593;</label>
+              <label for="swap-down-left">&#8595;</label>
+              <div></div>
+              <a href="https://sites.google.com/view/maverick-area/pamyatka" title="Памятка">Памятка</a>
+            </figure>
+            <figure class="right image">
+              <label for="swap-left-right">&#8592;</label>
+              <label for="swap-right-right">&#8594;</label>
+              <label for="swap-up-right">&#8593;</label>
+              <label for="swap-down-right">&#8595;</label>
+              <div></div>
+              <a href="https://sites.google.com/view/maverick-area/declaration_of_intent/declaration_of_intent_scancopy"
+                title="Декларація скан">Декларація скан</a>
+            </figure>
+            <figure class="front image">
+              <label for="swap-left-front">&#8592;</label>
+              <label for="swap-right-front">&#8594;</label>
+              <label for="swap-up-front">&#8593;</label>
+              <label for="swap-down-front">&#8595;</label>
+              <div>
+                <p><i>Посланиe aпостола Павла к Галатам 5:18</i></p>
+                <h3><i>"Если же вы водитесь Духом, то вы не под
+                    законом."</i></h3>
+              </div>
+              <a href="https://sites.google.com/view/maverick-area/pamyatka/docs" title="Нормативна база">Нормативна
+                база</a>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Сторінка 5 -->
+    <div class="page page-5">
+      <canvas class="polar-plot" id="polar-plot-4"></canvas>
+      <div class="content">
+        <!--<h2>Правова пам'ятка</h2>
+        <p>Тут розміщується текст правової пам'ятки</p>
+        <p>З важливими правовими аспектами</p>
+        <p>Та рекомендаціями</p>-->
+      </div>
+    </div>
+  </div>
+
+  <!-- Діалог введення паролю -->
+  <div class="password-dialog" id="password-dialog">
+    <h3>Введіть пароль</h3>
+    <input type="password" id="password-input" placeholder="Пароль">
+    <button id="submit-password">Підтвердити</button>
+    <p id="password-error">Невірний пароль!</p>
+  </div>
+
+  <!-- Панель навігації -->
+  <div class="navigation">
+    <div class="nav-dot active" data-page="0"></div>
+    <div class="nav-dot" data-page="1"></div>
+    <div class="nav-dot" data-page="2"></div>
+    <div class="nav-dot" data-page="3"></div>
+    <div class="nav-dot" data-page="4"></div>
+  </div>
+
+  <!-- Project -->
+  <script src="main.js"></script>
+</body>
+
+</html>
