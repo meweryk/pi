@@ -1,11 +1,11 @@
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-@media (max-width: 600px) {
-    button {
+  @media (max-width: 600px) {
+  button {
         padding: 6px 12px;
         font-size: 0.9rem;
     }
@@ -37,7 +37,7 @@ body {
     display: flex;
     width: 500%;
     height: calc(100vh - 50px);
-    /* Враховуємо панель навігації */
+  /* Враховуємо панель навігації */
     transition: transform 0.3s ease;
 }
 
@@ -55,8 +55,8 @@ body {
 
 /* Сторінка 1 */
 .page-1 {
-    background-image: url("./pictures/fon-bardo.jpg");
-    background-size: cover;
+    background-image: url("/pictures/fon-bardo.jpg");
+  background-size: cover;
     background-color: #800000;
     color: gold;
     text-align: center;
@@ -65,45 +65,39 @@ body {
 }
 
 .page-1 h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1.5rem;
+    font-size: 2.3rem;
+    letter-spacing: 3px;
+    margin-bottom: 2rem;
 }
 
 .page-1 p {
-    font-size: 1.8rem;
+    font-size: 1.5rem;
+    letter-spacing: 1px;
 }
 
 /* Сторінки 2-4 */
 .page-2,
-.page-4 {
-    background-image: url("./pictures/fon-craft.jpg");
-    background-size: cover;
-    justify-content: flex-start;
-    /* Зміна з center на flex-start */
-    padding-top: 20px;
-    /* Додатковий відступ зверху */
-    background-position: center;
-    background-repeat: no-repeat;
-}
-.page-3 {
-    background-image: url("./pictures/fon-blue.jpg");
-    background-size: cover;
-    justify-content: flex-start;
-    /* Зміна з center на flex-start */
-    padding-top: 20px;
-    /* Додатковий відступ зверху */
-    background-position: center;
-    background-repeat: no-repeat;
-}
+.page-3,
+.page-4,
 .page-5 {
-    background-image: url("./pictures/sferalich2.jpg");
-    background-size: cover;
+    background-image: url("/pictures/fon-craft.jpg");
+  background-size: cover;
+    justify-content: flex-start;
+    /* Зміна з center на flex-start */
+    padding-top: 20px;
+    /* Додатковий відступ зверху */
+    background-position: center;
+    background-repeat: no-repeat;
+}
+/*.page-5 {
+    background-image: url("/pictures/fon-craft.jpg");
+  background-size: cover;
     background-color: #800000;
     color: gold;
     text-align: center;
     background-position: center;
     background-repeat: no-repeat;
-}
+}*/
 /* Контент на сторінках 2-5 */
 .page-2 .content,
 .page-3 .content,
@@ -123,7 +117,7 @@ body {
     max-width: 600px;
     text-align: center;
     filter: blur(5px);
-    transition: filter 0.3s ease;
+  transition: filter 0.3s ease;
 }
 .content.unblurred {
     filter: none;
@@ -137,17 +131,8 @@ body {
 .page-3 h2,
 .page-4 h2,
 .page-5 h2 {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     color: #800000;
-    margin-bottom: 10px;
-    text-align: center;
-    border-bottom: 1px solid #800000;
-    padding-bottom: 5px;
-}
-.page-3 h2 {
-    font-size: 1.3rem;
-    color: #FFBF82;
-    text-shadow: 0 0 2px #350202F2;
     margin-bottom: 10px;
     text-align: center;
     border-bottom: 1px solid #800000;
@@ -166,32 +151,22 @@ body {
     padding-bottom: 5px;
 }
 .page-2 p,
+.page-3 p,
 .page-4 p,
 .page-5 p {
-    font-size: 1rem;
+    font-size: 0.9rem;
     letter-spacing: 0.5px;
     color: #2B0289;
-    line-height: 1.4;
+    line-height: 1.2;
     text-align: center;
     /* Вирівнювання */
     margin-left: 5px;
     margin-right: 5px;
     margin-bottom: 5px;
-    /* Абзаци на сторінках 2-4 */
 }
-.page-3 p {
-    font-size: 1rem;
-    font-style: italic;
-    letter-spacing: 0.5px;
-    color: #FDFF6A;
-    text-shadow: 0 0 2px #350202F2;
-    line-height: 1.4;
-    text-align: left;
-    /* Вирівнювання */
-    margin-left: 5px;
-    margin-right: 5px;
-    margin-bottom: 5px;
-    /* Абзаци на сторінках 2-4 */
+.page-3 p,
+.page-5 p {
+    text-align: left; /* Вирівнювання */
 }
 #photo-placeholder,
 .photo-container {
@@ -201,7 +176,7 @@ body {
     margin: 0px auto 15px;
     border: 1px solid #d4af37;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    position: relative;
+  position: relative;
     overflow: hidden;
     display: flex;
     justify-content: center;
@@ -216,7 +191,7 @@ body {
     margin: 0px auto 15px;
     border: 1px solid #D4AF3700;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    position: relative;
+  position: relative;
     overflow: hidden;
     display: flex;
     justify-content: center;
@@ -247,7 +222,7 @@ button {
     padding: 8px 16px;
     background-color: #800000;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
-    color: gold;
+  color: gold;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -260,7 +235,7 @@ button {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    display: none;
+  display: none;
     /* Спочатку прихована */
 }
 /* Діалог доступу */
@@ -269,11 +244,11 @@ button {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: white;
+  background-color: white;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
-    z-index: 1000;
+  z-index: 1000;
     display: none;
     width: 80%;
     max-width: 300px;
@@ -326,7 +301,7 @@ button {
     right: 0;
     height: 50px;
     background-color: rgba(0, 0, 0, 0.7);
-    display: flex;
+  display: flex;
     justify-content: center;
     align-items: center;
     z-index: 10;
@@ -337,7 +312,7 @@ button {
     height: 12px;
     border-radius: 50%;
     background-color: rgba(255, 255, 255, 0.5);
-    margin: 0 8px;
+  margin: 0 8px;
     cursor: pointer;
     transition: all 0.3s ease;
 }
@@ -345,9 +320,9 @@ button {
 .nav-dot.active {
     background-color: gold;
     transform: scale(1.2);
-}
+  }
 
-table {
+  table {
     table-layout: fixed;
     width: 100%;
     border-collapse: collapse;
@@ -358,7 +333,7 @@ tbody td {
     width: 70%;
     font-size: 1rem;
     color: #2B0289;
-    padding: 5px 0px 5px 10px;
+    padding: 16px 0px 5px 10px;
     text-align: left;
     letter-spacing: 1px;
     line-height: 1.4;
@@ -368,9 +343,9 @@ tbody td {
 
 tbody th {
     width: 30%;
-    font-size: 0.6rem;
+    font-size: 0.7rem;
     color: #250048;
-    padding: 12px 10px 0px 0px;
+    padding: 18px 10px 0px 0px;
     text-align: right;
     font-family: "Rock Salt";
     line-height: 1.4;

@@ -1,7 +1,7 @@
 console.log('Hello World!');
 // Конфігурація
 const CONFIG = {
-  PASSWORD: "111", // Пароль доступу
+  PASSWORD: "2209mew", // Пароль доступу
   ACCESS_DURATION: 60000, // 1 хвилина (у мс)
 };
 
