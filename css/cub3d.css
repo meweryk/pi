@@ -79,23 +79,23 @@ figure div {
 }
 
 .left div {
-  background: url("/pictures/pamyatka.png");
+  background: url("./pictures/pamyatka.png");
 }
 
 .right div {
-  background: url("/pictures/declaration_of_intent_scancopy.png");
+  background: url("./pictures/declaration_of_intent_scancopy.png");
 }
 
 .back div {
-  background: url("/pictures/declaration_of_intent.png");
+  background: url("./pictures/declaration_of_intent.png");
 }
 
 .bottom div {
-  background: url("/pictures/obgruntuvannya.png");
+  background: url("./pictures/obgruntuvannya.png");
 }
 
 .top div {
-  background: url("/pictures/pravochin.png");
+  background: url("./pictures/pravochin.png");
 }
 
 figure h2 {
