@@ -2,7 +2,7 @@
 const API_CACHE = 'api-cache-v1';
 const CACHE_NAME = 'my-pwa-cache-${{ github.run_id }}'; // Уникальное имя для каждого деплоя
 const urlsToCache = [
-  '/',
+  '/ksiva/',
   '/index.html',
   '/css/style.css',
   '/css/cub3d.css',
