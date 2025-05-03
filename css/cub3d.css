@@ -67,7 +67,6 @@ figure {
 figure div {
   width: 100%;
   height: 100px;
-  /*background: url("https://picsum.photos/id/237/1280/720");*/
   background-size: cover !important;
   background-position: center !important;
   background-repeat: no-repeat !important;
@@ -79,23 +78,23 @@ figure div {
 }
 
 .left div {
-  background: url("./pictures/pamyatka.png");
+  background: url("../pictures/pamyatka.png");
 }
 
 .right div {
-  background: url("./pictures/declaration_of_intent_scancopy.png");
+  background: url("../pictures/declaration_of_intent_scancopy.png");
 }
 
 .back div {
-  background: url("./pictures/declaration_of_intent.png");
+  background: url("../pictures/declaration_of_intent.png");
 }
 
 .bottom div {
-  background: url("./pictures/obgruntuvannya.png");
+  background: url("../pictures/obgruntuvannya.png");
 }
 
 .top div {
-  background: url("./pictures/pravochin.png");
+  background: url("../pictures/pravochin.png");
 }
 
 figure h2 {
