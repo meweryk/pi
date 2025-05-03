@@ -55,7 +55,7 @@ body {
 
 /* Сторінка 1 */
 .page-1 {
-    background-image: url("./pictures/fon-bardo.jpg");
+    background-image: url("../pictures/fon-bardo.jpg");
   background-size: cover;
     background-color: #800000;
     color: gold;
@@ -80,7 +80,7 @@ body {
 .page-3,
 .page-4,
 .page-5 {
-    background-image: url("./pictures/fon-craft.jpg");
+    background-image: url("pictures/fon-craft.jpg");
   background-size: cover;
     justify-content: flex-start;
     /* Зміна з center на flex-start */
