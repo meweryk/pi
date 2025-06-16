@@ -7,7 +7,7 @@ const urlsToCache = [
   '/ksiva/css/style.css',
   '/ksiva/css/cub3d.css',
   '/ksiva/js/app.js',
-  '/ksiva/js/main.js', // Добавлена недостающая запятая
+  '/ksiva/js/main.js',
   '/ksiva/pictures/icon_192x192.png',
   '/ksiva/pictures/icon_512x512.png',
   '/ksiva/pictures/declaration_of_intent.png',
@@ -22,61 +22,81 @@ const urlsToCache = [
   '/ksiva/pictures/pravochin.png'
 ];
 
+// Установка: предзагрузка базовых файлов
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-    .then((cache) => cache.addAll(urlsToCache))
-    .catch(err => console.error('Cache addAll error:', err))
+      .then((cache) => cache.addAll(urlsToCache))
+      .catch(err => console.error('Cache addAll error:', err))
   );
+  self.skipWaiting(); // Активировать сразу
 });
 
+// Активация: очистка старых кешей
+self.addEventListener('activate', (event) => {
+  const cacheWhitelist = [CACHE_NAME, API_CACHE];
+  event.waitUntil(
+    caches.keys()
+      .then(cacheNames => {
+        return Promise.all(
+          cacheNames.map(cacheName => {
+            if (!cacheWhitelist.includes(cacheName)) {
+              return caches.delete(cacheName);
+            }
+          })
+        );
+      })
+  );
+  self.clients.claim(); // Перехват управления
+});
+
+// Перехват запросов
 self.addEventListener('fetch', (event) => {
-  // Обработка API запросов
-  if (event.request.url.includes('/api/')) {
+  const request = event.request;
+
+  // 1. API-запросы — кэшируем отдельно
+  if (request.url.includes('/api/')) {
     event.respondWith(
-      caches.open(API_CACHE)
-      .then(cache => {
-        return cache.match(event.request)
-        .then(response => response || fetch(event.request)
-          .then(networkResponse => {
-            cache.put(event.request, networkResponse.clone());
+      caches.open(API_CACHE).then(cache =>
+        cache.match(request).then(response =>
+          response || fetch(request).then(networkResponse => {
+            cache.put(request, networkResponse.clone());
             return networkResponse;
           })
         )
-      })
+      )
     );
     return;
   }
 
-  // Обработка навигационных запросов
-  if (event.request.mode === 'navigate') {
+  // 2. Навигационные запросы (HTML страницы)
+  if (request.mode === 'navigate') {
     event.respondWith(
-      caches.match('/index.html')
-      .then(response => response || fetch(event.request))
+      fetch(request)
+        .then(response => {
+          const responseClone = response.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(request, responseClone);
+          });
+          return response;
+        })
+        .catch(() => caches.match('/ksiva/index.html'))
     );
     return;
   }
 
-  // Обработка остальных запросов
+  // 3. Остальные запросы: изображения, css, js и т.п.
   event.respondWith(
-    caches.match(event.request)
-    .then(response => response || fetch(event.request))
-  );
-});
-
-self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME,
-    API_CACHE];
-  event.waitUntil(
-    caches.keys()
-    .then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (!cacheWhitelist.includes(cacheName)) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
+    caches.match(request).then(cachedResponse => {
+      return cachedResponse || fetch(request).then(networkResponse => {
+        // Сохраняем "на лету" всё, что не в API и не HTML
+        return caches.open(CACHE_NAME).then(cache => {
+          cache.put(request, networkResponse.clone());
+          return networkResponse;
+        });
+      });
+    }).catch(err => {
+      console.error('Fetch failed:', err);
     })
   );
 });
