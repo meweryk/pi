@@ -8,8 +8,8 @@ const urlsToCache = [
   '/ksiva/css/cub3d.css',
   '/ksiva/js/app.js',
   '/ksiva/js/main.js', // Добавлена недостающая запятая
-  '/ksiva/pictures/icon-192x192.png',
-  '/ksiva/pictures/icon-512x512.png',
+  '/ksiva/pictures/icon_192x192.png',
+  '/ksiva/pictures/icon_512x512.png',
   '/ksiva/pictures/declaration_of_intent.png',
   '/ksiva/pictures/declaration_of_intent_scancopy.png',
   '/ksiva/pictures/avtor.png',
