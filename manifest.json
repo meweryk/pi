@@ -1,8 +1,8 @@
 {
   "name": "Pavel's area",
-  "start_url": "/ksiva/", 
-  "scope": "/ksiva/",
-  "short_name": "Parea",
+  "start_url": "/pi/", 
+  "scope": "/pi/",
+  "short_name": "P-Area",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
