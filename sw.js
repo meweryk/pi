@@ -1,5 +1,5 @@
 //const CACHE_NAME = 'my-pwa-cache-v2'; // Увеличена версия
-const API_CACHE = 'api-cache-v1';
+const API_CACHE = 'api-cache-v3';
 const CACHE_NAME = 'my-pwa-cache-${{ github.run_id }}'; // Уникальное имя для каждого деплоя
 const urlsToCache = [
 '/pi/',
