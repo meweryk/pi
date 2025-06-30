@@ -2,24 +2,24 @@
 const API_CACHE = 'api-cache-v1';
 const CACHE_NAME = 'my-pwa-cache-${{ github.run_id }}'; // Уникальное имя для каждого деплоя
 const urlsToCache = [
-'/ksiva/',
-'/ksiva/index.html',
-'/ksiva/css/style.css',
-'/ksiva/css/cub3d.css',
-'/ksiva/js/app.js',
-'/ksiva/js/main.js', // Добавлена недостающая запятая
-'/ksiva/pictures/icon_192x192.png',
-'/ksiva/pictures/icon_512x512.png',
-'/ksiva/pictures/declaration_of_intent.png',
-'/ksiva/pictures/declaration_of_intent_scancopy.png',
-'/ksiva/pictures/avtor.png',
-'/ksiva/pictures/fon-bardo.jpg',
-'/ksiva/pictures/fon-craft.jpg',
-'/ksiva/pictures/foto_main.webp',
-'/ksiva/pictures/logoshapka.png',
-'/ksiva/pictures/obgruntuvannya.png',
-'/ksiva/pictures/pamyatka.png',
-'/ksiva/pictures/pravochin.png'
+'/pi/',
+'/pi/index.html',
+'/pi/css/style.css',
+'/pi/css/cub3d.css',
+'/pi/js/app.js',
+'/pi/js/main.js', // Добавлена недостающая запятая
+'/pi/pictures/icon_192x192.png',
+'/pi/pictures/icon_512x512.png',
+'/pi/pictures/declaration_of_intent.png',
+'/pi/pictures/declaration_of_intent_scancopy.png',
+'/pi/pictures/avtor.png',
+'/pi/pictures/fon-bardo.jpg',
+'/pi/pictures/fon-craft.jpg',
+'/pi/pictures/foto_main.webp',
+'/pi/pictures/logoshapka.png',
+'/pi/pictures/obgruntuvannya.png',
+'/pi/pictures/pamyatka.png',
+'/pi/pictures/pravochin.png'
 ];
 
 self.addEventListener('install', (event) => {
