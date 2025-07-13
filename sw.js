@@ -2,9 +2,13 @@ const API_CACHE = 'api-cache-v3';
 const CACHE_NAME = 'my-pwa-cache-${{ github.run_id }}';
 const EXTERNAL_CACHE = 'external-resources-cache-v1';
 const EXTERNAL_HOSTS = [
-  'https://sites.google.com/',
+  'sites.google.com', // Используем только домен без протокола
+  'cdn.example.org',
+  'fonts.googleapis.com',
+  'fonts.gstatic.com',
+  'stackpath.bootstrapcdn.com'
   'https://zakon.rada.gov.ua/'
-  // Добавьте другие домены здесь
+  // Добавьте другие домены по необходимости
 ];
 
 const urlsToCache = [
@@ -37,62 +41,26 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  const requestUrl = event.request.url;
+  const requestUrl = new URL(event.request.url);
+  const requestHost = requestUrl.hostname;
   
-  // 1. Проверка на внешний ресурс
-  const isExternalResource = EXTERNAL_HOSTS.some(host => requestUrl.startsWith(host));
+  // 1. Проверка на внешний ресурс (исправленная логика)
+  const isExternalResource = EXTERNAL_HOSTS.some(host => 
+    requestHost === host || requestHost.endsWith('.' + host)
+  );
   
   // 2. Обработка внешних ресурсов
   if (isExternalResource) {
     event.respondWith(
-      caches.open(EXTERNAL_CACHE).then(cache => {
-        return cache.match(event.request).then(cachedResponse => {
-          // Возвращаем кешированную версию, если есть
-          if (cachedResponse) return cachedResponse;
-          
-          // Загружаем из сети с режимом 'cors'
-          return fetch(event.request, { mode: 'cors' })
-            .then(networkResponse => {
-              // Кешируем только успешные ответы
-              if (networkResponse && networkResponse.status === 200) {
-                cache.put(event.request, networkResponse.clone());
-              }
-              return networkResponse;
-            })
-            .catch(() => {
-              // Fallback для внешних изображений
-              if (event.request.destination === 'image') {
-                return caches.match('/pi/pictures/icon_512x512.png');
-              }
-              return new Response('External resource unavailable', {
-                status: 503,
-                statusText: 'Service Unavailable'
-              });
-            });
-        });
-      })
+      handleExternalRequest(event)
     );
     return;
   }
 
   // 3. Обработка API запросов
-  if (requestUrl.includes('/api/')) {
+  if (requestUrl.pathname.startsWith('/api/')) {
     event.respondWith(
-      caches.open(API_CACHE).then(cache => {
-        return cache.match(event.request).then(cachedResponse => {
-          const fetchAndCache = fetch(event.request)
-            .then(networkResponse => {
-              // Кешируем только успешные ответы
-              if (networkResponse.status === 200) {
-                cache.put(event.request, networkResponse.clone());
-              }
-              return networkResponse;
-            })
-            .catch(() => cachedResponse); // Возвращаем кеш при ошибке сети
-          
-          return cachedResponse || fetchAndCache;
-        });
-      })
+      handleApiRequest(event)
     );
     return;
   }
@@ -102,61 +70,102 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       caches.match(event.request)
         .then(cached => cached || fetch(event.request)
-        .catch(() => caches.match('/pi/index.html')) // Fallback для SPA
+        .catch(() => caches.match('/pi/index.html'))
     );
     return;
   }
 
   // 5. Обработка статических ресурсов
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      // Возвращаем кеш если есть
+    handleStaticRequest(event)
+  );
+});
+
+// Функция обработки внешних запросов
+function handleExternalRequest(event) {
+  return caches.open(EXTERNAL_CACHE).then(cache => {
+    return cache.match(event.request).then(cachedResponse => {
+      // Возвращаем кешированную версию, если есть
       if (cachedResponse) return cachedResponse;
       
-      // Для всех GET-запросов кешируем ресурсы
-      return fetch(event.request).then(networkResponse => {
-        // Проверяем, можно ли кешировать
-        if (!networkResponse || networkResponse.status !== 200 || 
-            networkResponse.type !== 'basic' || event.request.method !== 'GET') {
-          return networkResponse;
+      // Пытаемся загрузить из сети
+      return fetch(event.request.clone(), {
+        mode: 'no-cors', // Используем no-cors для обхода CORS
+        credentials: 'omit'
+      }).then(networkResponse => {
+        // Кешируем только непрозрачные (opaque) ответы
+        if (networkResponse && networkResponse.type === 'opaque') {
+          cache.put(event.request, networkResponse.clone());
         }
-        
-        // Клонируем ответ для кеширования
-        const responseToCache = networkResponse.clone();
-        
-        // Определяем, в какой кеш сохранять
-        const cacheType = requestUrl.includes('/api/') ? API_CACHE : CACHE_NAME;
-        
-        caches.open(cacheType).then(cache => {
-          cache.put(event.request, responseToCache);
-        });
-        
         return networkResponse;
-      }).catch(error => {
+      }).catch(() => {
         // Fallback для изображений
         if (event.request.destination === 'image') {
           return caches.match('/pi/pictures/icon_512x512.png');
         }
-        
-        // Fallback для CSS
-        if (event.request.destination === 'style') {
-          return new Response('', { headers: { 'Content-Type': 'text/css' } });
-        }
-        
-        // Fallback для JS
-        if (event.request.destination === 'script') {
-          return new Response('// Offline mode', 
-            { headers: { 'Content-Type': 'application/javascript' } });
-        }
-        
-        return new Response('Offline content unavailable', { 
+        return new Response('External resource unavailable', {
           status: 503,
-          statusText: 'Service Unavailable' 
+          statusText: 'Service Unavailable'
         });
       });
-    })
-  );
-});
+    });
+  });
+}
+
+// Функция обработки API запросов
+function handleApiRequest(event) {
+  return caches.open(API_CACHE).then(cache => {
+    return cache.match(event.request).then(cachedResponse => {
+      const fetchAndCache = fetch(event.request.clone())
+        .then(networkResponse => {
+          if (networkResponse.status === 200) {
+            cache.put(event.request, networkResponse.clone());
+          }
+          return networkResponse;
+        })
+        .catch(() => cachedResponse);
+      
+      return cachedResponse || fetchAndCache;
+    });
+  });
+}
+
+// Функция обработки статических запросов
+function handleStaticRequest(event) {
+  return caches.match(event.request).then(cachedResponse => {
+    if (cachedResponse) return cachedResponse;
+    
+    return fetch(event.request.clone()).then(networkResponse => {
+      if (networkResponse && 
+          networkResponse.status === 200 && 
+          networkResponse.type === 'basic' && 
+          event.request.method === 'GET') {
+        
+        const responseToCache = networkResponse.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, responseToCache);
+        });
+      }
+      return networkResponse;
+    }).catch(error => {
+      if (event.request.destination === 'image') {
+        return caches.match('/pi/pictures/icon_512x512.png');
+      }
+      if (event.request.destination === 'style') {
+        return new Response('', { headers: { 'Content-Type': 'text/css' } });
+      }
+      if (event.request.destination === 'script') {
+        return new Response('// Offline mode', { 
+          headers: { 'Content-Type': 'application/javascript' } 
+        });
+      }
+      return new Response('Offline content unavailable', { 
+        status: 503,
+        statusText: 'Service Unavailable' 
+      });
+    });
+  });
+}
 
 self.addEventListener('activate', (event) => {
   const cacheWhitelist = [CACHE_NAME, API_CACHE, EXTERNAL_CACHE];
