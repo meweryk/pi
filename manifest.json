@@ -1,11 +1,12 @@
 {
   "name": "Pavel's area",
+  "short_name": "PI",
   "start_url": "/pi/", 
   "scope": "/pi/",
   "short_name": "P-Area",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#000000",
+  "theme_color": "#2c3e50",
   "icons": [
     {
       "src": "pictures/icon_192x192.png",
