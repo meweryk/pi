@@ -1,6 +1,12 @@
-//const CACHE_NAME = 'my-pwa-cache-v2'; // Увеличена версия
 const API_CACHE = 'api-cache-v3';
 const CACHE_NAME = 'my-pwa-cache-${{ github.run_id }}';
+const EXTERNAL_CACHE = 'external-resources-cache-v1';
+const EXTERNAL_HOSTS = [
+  'https://sites.google.com/',
+  'https://zakon.rada.gov.ua/'
+  // Добавьте другие домены здесь
+];
+
 const urlsToCache = [
   '/pi/',
   '/pi/index.html',
@@ -31,60 +37,102 @@ self.addEventListener('install', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // 1. Обработка API запросов
-  if (event.request.url.includes('/api/')) {
+  const requestUrl = event.request.url;
+  
+  // 1. Проверка на внешний ресурс
+  const isExternalResource = EXTERNAL_HOSTS.some(host => requestUrl.startsWith(host));
+  
+  // 2. Обработка внешних ресурсов
+  if (isExternalResource) {
     event.respondWith(
-      caches.open(API_CACHE).then(cache => {
+      caches.open(EXTERNAL_CACHE).then(cache => {
         return cache.match(event.request).then(cachedResponse => {
-          // Пытаемся получить свежие данные из сети
-          const fetchPromise = fetch(event.request).then(networkResponse => {
-            // Обновляем кеш новыми данными
-            cache.put(event.request, networkResponse.clone());
-            return networkResponse;
-          }).catch(() => {
-            // Если сеть недоступна - возвращаем кешированный ответ
-            return cachedResponse || new Response(JSON.stringify({ error: "Network unavailable" }), {
-              headers: { 'Content-Type': 'application/json' }
-            });
-          });
+          // Возвращаем кешированную версию, если есть
+          if (cachedResponse) return cachedResponse;
           
-          // Возвращаем кеш сразу если есть, параллельно обновляя его
-          return cachedResponse ? cachedResponse : fetchPromise;
+          // Загружаем из сети с режимом 'cors'
+          return fetch(event.request, { mode: 'cors' })
+            .then(networkResponse => {
+              // Кешируем только успешные ответы
+              if (networkResponse && networkResponse.status === 200) {
+                cache.put(event.request, networkResponse.clone());
+              }
+              return networkResponse;
+            })
+            .catch(() => {
+              // Fallback для внешних изображений
+              if (event.request.destination === 'image') {
+                return caches.match('/pi/pictures/icon_512x512.png');
+              }
+              return new Response('External resource unavailable', {
+                status: 503,
+                statusText: 'Service Unavailable'
+              });
+            });
         });
       })
     );
     return;
   }
 
-  // 2. Обработка навигационных запросов (ГЛАВНОЕ ИСПРАВЛЕНИЕ)
-  if (event.request.mode === 'navigate') {
+  // 3. Обработка API запросов
+  if (requestUrl.includes('/api/')) {
     event.respondWith(
-      // Каскадный поиск подходящего документа
-      caches.match(event.request)
-        .then(cached => cached || caches.match('/pi/index.html'))
-        .then(response => response || fetch(event.request))
+      caches.open(API_CACHE).then(cache => {
+        return cache.match(event.request).then(cachedResponse => {
+          const fetchAndCache = fetch(event.request)
+            .then(networkResponse => {
+              // Кешируем только успешные ответы
+              if (networkResponse.status === 200) {
+                cache.put(event.request, networkResponse.clone());
+              }
+              return networkResponse;
+            })
+            .catch(() => cachedResponse); // Возвращаем кеш при ошибке сети
+          
+          return cachedResponse || fetchAndCache;
+        });
+      })
     );
     return;
   }
 
-  // 3. Обработка статических ресурсов (CSS, JS, изображения)
+  // 4. Обработка навигационных запросов
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      caches.match(event.request)
+        .then(cached => cached || fetch(event.request)
+        .catch(() => caches.match('/pi/index.html')) // Fallback для SPA
+    );
+    return;
+  }
+
+  // 5. Обработка статических ресурсов
   event.respondWith(
     caches.match(event.request).then(cachedResponse => {
-      // Если есть в кеше - возвращаем
+      // Возвращаем кеш если есть
       if (cachedResponse) return cachedResponse;
       
-      // Если нет в кеше - идем в сеть
+      // Для всех GET-запросов кешируем ресурсы
       return fetch(event.request).then(networkResponse => {
+        // Проверяем, можно ли кешировать
+        if (!networkResponse || networkResponse.status !== 200 || 
+            networkResponse.type !== 'basic' || event.request.method !== 'GET') {
+          return networkResponse;
+        }
+        
         // Клонируем ответ для кеширования
         const responseToCache = networkResponse.clone();
         
-        // Сохраняем в кеш для будущих запросов
-        caches.open(CACHE_NAME).then(cache => {
+        // Определяем, в какой кеш сохранять
+        const cacheType = requestUrl.includes('/api/') ? API_CACHE : CACHE_NAME;
+        
+        caches.open(cacheType).then(cache => {
           cache.put(event.request, responseToCache);
         });
         
         return networkResponse;
-      }).catch(() => {
+      }).catch(error => {
         // Fallback для изображений
         if (event.request.destination === 'image') {
           return caches.match('/pi/pictures/icon_512x512.png');
@@ -92,12 +140,15 @@ self.addEventListener('fetch', (event) => {
         
         // Fallback для CSS
         if (event.request.destination === 'style') {
-          return new Response('body { background: #f0f0f0; }', { 
-            headers: { 'Content-Type': 'text/css' } 
-          });
+          return new Response('', { headers: { 'Content-Type': 'text/css' } });
         }
         
-        // Общий fallback
+        // Fallback для JS
+        if (event.request.destination === 'script') {
+          return new Response('// Offline mode', 
+            { headers: { 'Content-Type': 'application/javascript' } });
+        }
+        
         return new Response('Offline content unavailable', { 
           status: 503,
           statusText: 'Service Unavailable' 
@@ -108,7 +159,7 @@ self.addEventListener('fetch', (event) => {
 });
 
 self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME, API_CACHE];
+  const cacheWhitelist = [CACHE_NAME, API_CACHE, EXTERNAL_CACHE];
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
