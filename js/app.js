@@ -1,6 +1,6 @@
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/ksiva/sw.js')
+    navigator.serviceWorker.register('/pi/sw.js', { scope: '/pi/' })
       .then(registration => {
         console.log('SW registered:', registration);
       })
