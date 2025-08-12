@@ -31,7 +31,8 @@ const urlsToCache = [
   '/pi/pictures/logoshapka.png',
   '/pi/pictures/obgruntuvannya.png',
   '/pi/pictures/pamyatka.png',
-  '/pi/pictures/pravochin.png'
+  '/pi/pictures/pravochin.png',
+  'https://fonts.googleapis.com/css?family=Rock+Salt'
 ];
 
 self.addEventListener('install', (event) => {
