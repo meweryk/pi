@@ -1,20 +1,18 @@
-const API_CACHE = 'api-cache-v4';
-const CACHE_NAME = 'my-pwa-cache-v1'; // Фиксированная версия
-const EXTERNAL_CACHE = 'external-resources-cache-v1';
-const FALLBACK_IMAGE = '/pi/pictures/icon_512x512.png';
+const CACHE_NAME = 'pi-cache-v5';
 const FALLBACK_HTML = '/pi/index.html';
+const FALLBACK_IMAGE = '/pi/pictures/icon_512x512.png';
 
+// Список внешних хостов для кэширования
 const EXTERNAL_HOSTS = [
-  'sites.google.com',
-  'cdn.example.org',
   'fonts.googleapis.com',
   'fonts.gstatic.com',
+  'cdn.jsdelivr.net',
   'stackpath.bootstrapcdn.com',
-  'zakon.rada.gov.ua' // Только домен без протокола и путей
+  'zakon.rada.gov.ua'
 ];
 
+// Кэшируемые ресурсы
 const urlsToCache = [
-  '/pi/',
   '/pi/index.html',
   '/pi/css/style.css',
   '/pi/css/cub3d.css',
@@ -32,82 +30,65 @@ const urlsToCache = [
   '/pi/pictures/obgruntuvannya.png',
   '/pi/pictures/pamyatka.png',
   '/pi/pictures/pravochin.png',
-  'https://fonts.googleapis.com/css?family=Rock+Salt'
+  
+  // Примеры внешних ресурсов
+  'https://fonts.googleapis.com/css?family=Rock+Salt',
+  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css'
 ];
 
-self.addEventListener('install', (event) => {
+self.addEventListener('install', event => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then((cache) => {
-        console.log('[SW] Кэширование основных ресурсов');
+      .then(cache => {
+        console.log('[SW] Кэширование ресурсов');
         return cache.addAll(urlsToCache);
       })
-      .catch(err => console.error('[SW] Ошибка установки:', err))
+      .catch(err => console.error('[SW] Ошибка:', err))
   );
 });
 
-self.addEventListener('fetch', (event) => {
+self.addEventListener('fetch', event => {
   const requestUrl = new URL(event.request.url);
-  const requestHost = requestUrl.hostname;
   
-  // 1. Проверка на внешний ресурс
-  const isExternalResource = EXTERNAL_HOSTS.some(host => 
-    requestHost === host || requestHost.endsWith('.' + host)
+  // Проверка на внешний ресурс
+  const isExternal = EXTERNAL_HOSTS.some(host => 
+    requestUrl.hostname.includes(host)
   );
   
-  // 2. Обработка API запросов
-  if (requestUrl.pathname.startsWith('/api/')) {
-    event.respondWith(handleApiRequest(event));
+  // Обработка навигации
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request)
+        .catch(() => caches.match(FALLBACK_HTML))
+    );
     return;
   }
   
-  // 3. Обработка внешних ресурсов
-  if (isExternalResource) {
+  // Обработка внешних ресурсов
+  if (isExternal) {
     event.respondWith(handleExternalRequest(event));
     return;
   }
 
-  // 4. Обработка всех остальных запросов
-  event.respondWith(handleMainRequest(event));
+  // Обработка локальных ресурсов
+  event.respondWith(handleLocalRequest(event));
 });
 
-// Обработка основных запросов
-function handleMainRequest(event) {
-  // Для навигационных запросов - особый подход
-  if (event.request.mode === 'navigate') {
-    return caches.match(FALLBACK_HTML)
-      .then(cachedHtml => {
-        return fetch(event.request)
-          .then(networkRes => {
-            // Обновляем кэш при успешном ответе
-            const clone = networkRes.clone();
-            caches.open(CACHE_NAME)
-              .then(cache => cache.put(event.request, clone));
-            return networkRes;
-          })
-          .catch(() => cachedHtml || caches.match(FALLBACK_HTML));
-    });
-  }
-
+function handleLocalRequest(event) {
   return caches.match(event.request)
     .then(cachedResponse => {
       // 1. Возвращаем кэшированный ресурс если есть
-      if (cachedResponse) {
-        console.log(`[SW] Используем кэш: ${event.request.url}`);
-        return cachedResponse;
-      }
+      if (cachedResponse) return cachedResponse;
       
       // 2. Пробуем загрузить из сети
-      return fetch(event.request.clone())
+      return fetch(event.request)
         .then(networkResponse => {
           // Кэшируем только успешные ответы
-          if (networkResponse.status === 200 && event.request.method === 'GET') {
+          if (networkResponse.status === 200) {
             const clone = networkResponse.clone();
             caches.open(CACHE_NAME)
-              .then(cache => {
-                console.log(`[SW] Кэшируем: ${event.request.url}`);
-                cache.put(event.request, clone);
-              });
+              .then(cache => cache.put(event.request, clone));
           }
           return networkResponse;
         })
@@ -115,63 +96,46 @@ function handleMainRequest(event) {
           console.error('[SW] Ошибка сети:', error);
           
           // 3. Fallback-стратегии
-          // HTML-документы
-          if (event.request.destination === 'document' || 
-              event.request.headers.get('accept').includes('text/html')) {
-            return caches.match(FALLBACK_HTML);
-          }
-          
-          // Изображения
           if (event.request.destination === 'image') {
             return caches.match(FALLBACK_IMAGE);
           }
           
-          // Стили
-          if (event.request.destination === 'style') {
-            return new Response('/* offline fallback */', {
-              headers: {'Content-Type': 'text/css'}
-            });
+          if (event.request.headers.get('accept').includes('text/html')) {
+            return caches.match(FALLBACK_HTML);
           }
           
-          // Скрипты
-          if (event.request.destination === 'script') {
-            return new Response('// offline fallback', {
-              headers: {'Content-Type': 'application/javascript'}
-            });
-          }
-          
-          return new Response('Offline', {
-            status: 503,
-            statusText: 'Service Unavailable'
-          });
+          return new Response('Offline content', { status: 503 });
         });
     });
 }
 
-// Обработка внешних запросов
 function handleExternalRequest(event) {
-  return caches.open(EXTERNAL_CACHE)
-    .then(cache => cache.match(event.request))
+  return caches.match(event.request)
     .then(cachedResponse => {
+      // 1. Возвращаем кэшированную версию если есть
       if (cachedResponse) {
         console.log(`[SW] Внешний ресурс из кэша: ${event.request.url}`);
         return cachedResponse;
       }
       
-      return fetch(event.request.clone())
+      // 2. Загружаем из сети
+      return fetch(event.request, {
+        mode: 'cors',
+        credentials: 'omit'
+      })
         .then(networkResponse => {
-          // Кэшируем только если ответ успешен
+          // Кэшируем только успешные ответы
           if (networkResponse.status === 200) {
             const clone = networkResponse.clone();
-            caches.open(EXTERNAL_CACHE)
+            caches.open(CACHE_NAME)
               .then(cache => cache.put(event.request, clone));
           }
           return networkResponse;
         })
         .catch(error => {
-          console.error('[SW] Ошибка загрузки внешнего ресурса:', error);
+          console.error('[SW] Ошибка внешнего ресурса:', error);
           
-          // Fallback для изображений
+          // 3. Fallback для изображений
           if (event.request.destination === 'image') {
             return caches.match(FALLBACK_IMAGE);
           }
@@ -184,42 +148,17 @@ function handleExternalRequest(event) {
     });
 }
 
-// Обработка API запросов
-function handleApiRequest(event) {
-  return caches.open(API_CACHE)
-    .then(cache => cache.match(event.request))
-    .then(cachedResponse => {
-      // Пытаемся получить свежие данные
-      return fetch(event.request.clone())
-        .then(networkResponse => {
-          // Кэшируем только успешные ответы
-          if (networkResponse.status === 200) {
-            const clone = networkResponse.clone();
-            cache.put(event.request, clone);
-          }
-          return networkResponse;
-        })
-        .catch(() => {
-          // Возвращаем кэш если сеть недоступна
-          if (cachedResponse) return cachedResponse;
-          return new Response('API offline', { status: 503 });
-        });
-    });
-}
-
-self.addEventListener('activate', (event) => {
-  const cacheWhitelist = [CACHE_NAME, API_CACHE, EXTERNAL_CACHE];
-  
+self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
         cacheNames.map(cacheName => {
-          if (!cacheWhitelist.includes(cacheName)) {
+          if (cacheName !== CACHE_NAME) {
             console.log('[SW] Удаляем старый кэш:', cacheName);
             return caches.delete(cacheName);
           }
         })
       );
-    }).then(() => self.clients.claim()) // Немедленный контроль страниц
+    }).then(() => self.clients.claim())
   );
 });
