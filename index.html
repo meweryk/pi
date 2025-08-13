@@ -233,7 +233,16 @@ title="Декларація скан">Декларація скан</a>
 </div>
 
 <!-- Project -->
-<script src="./js/app.js"></script>
+<script>
+  // Регистрация Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/pi/sw.js')
+          .then(reg => console.log('SW registered:', reg))
+          .catch(err => console.error('SW error:', err));
+      });
+    }
+</script>
 <script src="./js/main.js"></script>
 </body>
 
