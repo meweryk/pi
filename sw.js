@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pi-cache-v5';
+const CACHE_NAME = 'pi-cache-v6';
 const FALLBACK_HTML = '/pi/index.html';
 const FALLBACK_IMAGE = '/pi/pictures/icon_512x512.png';
 
